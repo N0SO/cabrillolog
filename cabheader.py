@@ -127,7 +127,7 @@ class cabrilloHeader():
                     
     def setTagData(self, tag, tdata):
         result = False
-        taglist = vars(self)
+        taglist = vars(self).keys()
         #print(taglist)
         mtag = tag.replace('-','_')
         if (mtag in taglist):

@@ -33,6 +33,23 @@ class QSO():
             self.parseQSO(qdata)
         
     def parseQSO(self, qdata):
+        """
+        Populate qso data elements from qdata. Expected format:
+            freq (in KHz)
+            mode
+            date (yyyy-mm-dd)
+            time (hhmm in UTC)
+            mycall (station making qso)
+            myrst
+            myqth
+            urcall (station qso was with)
+            urrst
+            urqth
+        All elements separated by whitespace.
+        This works for the Missouri QSO Party.
+
+        Needs error checking added!
+        """
         qsoutils=QSOUtils()
         MAXELEMENTS=10
         self.qerrors = []
@@ -67,6 +84,9 @@ class QSO():
         
 
     def getQSO(self):
+        """
+        Return  QSO as a dict() object
+        """
         return vars(self)
 
     def __dofmt(self, fmt):

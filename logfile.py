@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from cablog.qso import QSO
-from cablog.cabheader import cabrilloHeader
+from cabrillolog.qso import QSO
+from cabrillolog.cabheader import cabrilloHeader
 from cabrilloutils.qsoutils import QSOUtils
 
 class logFile():
