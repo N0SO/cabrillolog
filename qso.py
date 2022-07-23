@@ -81,8 +81,23 @@ class QSO():
         self.valid = True
         return True
         
+    def parseDBQSO(self,  qso):
+        self.freq = qso['FREQ']
+        self.mode = qso['MODE']
         
+        self.qtime = qso['DATETIME']
+                        
+        self.mycall =qso['MYCALL']
+        self.myrst = qso['MYREPORT']
+        self.myqth = qso['MYQTH']
+               
+        self.urcall = qso['URCALL']
+        self.urrst = qso['URREPORT']
+        self.urqth = qso['URQTH']
+        self.valid =  qso['VALID']
+        return True
 
+                             
     def getQSO(self):
         """
         Return  QSO as a dict() object
