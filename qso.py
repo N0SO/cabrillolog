@@ -28,6 +28,7 @@ class QSO():
         self.urqth=urqth
         self.valid=valid
         self.dupe=dupe
+        self.qdata=qdata
 
         if (qdata):
             self.parseQSO(qdata)
@@ -80,24 +81,7 @@ class QSO():
 
         self.valid = True
         return True
-        
-    def parseDBQSO(self,  qso):
-        self.freq = qso['FREQ']
-        self.mode = qso['MODE']
-        
-        self.qtime = qso['DATETIME']
-                        
-        self.mycall =qso['MYCALL']
-        self.myrst = qso['MYREPORT']
-        self.myqth = qso['MYQTH']
-               
-        self.urcall = qso['URCALL']
-        self.urrst = qso['URREPORT']
-        self.urqth = qso['URQTH']
-        self.valid =  qso['VALID']
-        return True
-
-                             
+                                    
     def getQSO(self):
         """
         Return  QSO as a dict() object
@@ -140,6 +124,113 @@ class QSO():
     def showh(self):
         print(self.makeHTML())
 
+class dbQSO(QSO):
+    """
+    QSO class with added storage for database fields:
+    id = record id.
+    logid = the database of the logheader for this QSO.
+    qsl = the ID of the QSO record this QSO CONFIRMS (QSL).
+    nolog True = no log from URCALL in database for this QSO.
+    noqsos True = no matching qso in URCALL log for this QSO.
+    """
+    def __init__(   self,
+                    freq=None,
+                    mode=None,
+                    qtime=None,
+                    mycall=None,
+                    myrst=None,
+                    myqth=None,
+                    urcall=None,
+                    urrst=None,
+                    urqth=None,
+                    valid=False,
+                    dupe=False,
+                    qdata = None,
+                    id = None,
+                    logid=None,
+                    qsl=None,
+                    nolog=False,
+                    noqsos = False):
+        
+        self.id=id
+        self.logid=logid
+        self.qsl=qsl
+        self.nolog=nolog
+        self.noqsos=noqsos
+        # Call parent init to complete
+        super().__init__(   \
+                            freq=freq,
+                            mode=mode,
+                            qtime=qtime,
+                            mycall=mycall,
+                            myrst=myrst,
+                            myqth=myqth,
+                            urcall=urcall,
+                            urrst=urrst,
+                            urqth=urqth,
+                            valid=valid,
+                            dupe=dupe,
+                            qdata=qdata)
+
+    def parseQSO(self,  qso):
+        """
+        QSOs input from a database will be a Dict() object
+        instead of a list if strings.
+        """
+        if isinstance(qso, str):
+            print('string')
+            #call parent
+            super().parseQSO(qso)
+            return True
+        #else parse the dict() qso   
+        print('dict()')        
+        self.id = qso['ID']
+        self.logid = qso['LOGID']
+        self.freq = qso['FREQ']
+        self.mode = qso['MODE']
+        
+        self.qtime = qso['DATETIME']
+                        
+        self.mycall =qso['MYCALL']
+        self.myrst = qso['MYREPORT']
+        self.myqth = qso['MYQTH']
+               
+        self.urcall = qso['URCALL']
+        self.urrst = qso['URREPORT']
+        self.urqth = qso['URQTH']
+        self.valid =  qso['VALID']
+        self.dupe = qso['DUPE']
+        self.qsl = qso['QSL']
+        self.nolog = qso['NOLOG']
+        self.noqsos = qso['NOQSOS']
+        return True
+                    
+
 if __name__ == '__main__':
     """Test code goes here"""
+    tt=dbQSO()
+    print('dict:\n{}'.format(dir(tt)))
+    print('vars:\n{}'.format(vars(tt)))
+    print('keys:\n{}'.format(vars(tt).keys()))
+    
+    tt = dbQSO(qdata = '7074 FT8 2022-07-25 1715 N0SO -10 EM48 AB0RX -05 EM39')
+    tt = dbQSO(qdata = {'FREQ':7074,
+                        'MODE':'FT8',
+                        'DATETIME': (2022, 7, 25, 17, 15),
+                        'MYCALL':'N0SO',
+                        'MYREPORT': -10,
+                        'MYQTH':'EM48',
+                        'URCALL':'AB0RX',
+                        'URREPORT': -5,
+                        'URQTH':'EM39',
+                        'ID': 1,
+                        'LOGID': 100,
+                        'QSL': 300,
+                        'VALID': 1,
+                        'NOQSOS': 0,
+                        'NOLOG': 1,
+                        'DUPE': 0
+                        })
+#    tt = dbQSO(freq=7074)
+    print ('populated tt:\n{}'.format(vars(tt)))
    
