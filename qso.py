@@ -205,32 +205,3 @@ class dbQSO(QSO):
         self.noqsos = qso['NOQSOS']
         return True
                     
-
-if __name__ == '__main__':
-    """Test code goes here"""
-    tt=dbQSO()
-    print('dict:\n{}'.format(dir(tt)))
-    print('vars:\n{}'.format(vars(tt)))
-    print('keys:\n{}'.format(vars(tt).keys()))
-    
-    tt = dbQSO(qdata = '7074 FT8 2022-07-25 1715 N0SO -10 EM48 AB0RX -05 EM39')
-    tt = dbQSO(qdata = {'FREQ':7074,
-                        'MODE':'FT8',
-                        'DATETIME': (2022, 7, 25, 17, 15),
-                        'MYCALL':'N0SO',
-                        'MYREPORT': -10,
-                        'MYQTH':'EM48',
-                        'URCALL':'AB0RX',
-                        'URREPORT': -5,
-                        'URQTH':'EM39',
-                        'ID': 1,
-                        'LOGID': 100,
-                        'QSL': 300,
-                        'VALID': 1,
-                        'NOQSOS': 0,
-                        'NOLOG': 1,
-                        'DUPE': 0
-                        })
-#    tt = dbQSO(freq=7074)
-    print ('populated tt:\n{}'.format(vars(tt)))
-   
