@@ -30,8 +30,7 @@ class cabrilloHeader():
                     ADDRESS_COUNTRY=None,
                     OPERATORS=None,
                     OFFTIME=None,
-                    SOAPBOX=None,
-                    RAWLOG=None):
+                    SOAPBOX=None):
   
         self.START_OF_LOG=START_OF_LOG
         self.END_OF_LOG=END_OF_LOG
@@ -62,7 +61,7 @@ class cabrilloHeader():
         self.OPERATORS=OPERATORS
         self.OFFTIME=OFFTIME
         self.SOAPBOX=SOAPBOX
-        self.RAWLOG=RAWLOG
+
     
     def __dofmt(self, fmt):
         return (fmt.format(\
@@ -94,8 +93,7 @@ class cabrilloHeader():
                     self.ADDRESS_COUNTRY,
                     self.OPERATORS,
                     self.OFFTIME,
-                    self.SOAPBOX,
-                    self.RAWLOG))
+                    self.SOAPBOX))
                     
     def makeTSV(self):
         """
@@ -103,7 +101,7 @@ class cabrilloHeader():
         """
         fmt = '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t' +\
               '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t' +\
-              '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
+              '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
         return self.__dofmt(fmt)
 
     def makeHTML(self):
@@ -116,7 +114,7 @@ class cabrilloHeader():
             '<td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
             '<td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
             '<td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
-            '<td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'
+            '<td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'
         return self.__dofmt(fmt)
 
     def show(self):
@@ -138,3 +136,75 @@ class cabrilloHeader():
      
     def getHeader(self):
         return vars(self)
+
+class dbcabrilloHeader(cabrilloHeader):
+
+    def __init__(   self,
+                    START_OF_LOG=None,
+                    END_OF_LOG=False,
+                    CALLSIGN=None,
+                    CONTEST=None,
+                    CATEGORY_ASSISTED=False,
+                    CATEGORY_BAND=None,
+                    CATEGORY_MODE=None,
+                    CATEGORY_OPERATOR=None,
+                    CATEGORY_POWER=None,
+                    CATEGORY_STATION=None,
+                    CATEGORY_TIME=None,
+                    CATEGORY_TRANSMITTER=None,
+                    CATEGORY_OVERLAY=None,
+                    CERTIFICATE=False,
+                    CLAIMED_SCORE=0,
+                    CLUB=None,
+                    CREATED_BY=None,
+                    EMAIL=None,
+                    GRID_LOCATOR=None,
+                    LOCATION=None,
+                    NAME=None,
+                    ADDRESS=None,
+                    ADDRESS_CITY=None,
+                    ADDRESS_STATE_PROVINCE=None,
+                    ADDRESS_POSTALCODE=None,
+                    ADDRESS_COUNTRY=None,
+                    OPERATORS=None,
+                    OFFTIME=None,
+                    SOAPBOX=None,
+                    ID=None,
+                    CABBONUS=False,
+                    TIMESTAMP=None):
+  
+        self.ID=ID
+        self.CABBONUS=CABBONUS=False
+        self.TIMESTAMP=TIMESTAMP=None
+        super().__init__(    \
+                            START_OF_LOG,
+                            END_OF_LOG,
+                            CALLSIGN,
+                            CONTEST,
+                            CATEGORY_ASSISTED,
+                            CATEGORY_BAND,
+                            CATEGORY_MODE,
+                            CATEGORY_OPERATOR,
+                            CATEGORY_POWER,
+                            CATEGORY_STATION,
+                            CATEGORY_TIME,
+                            CATEGORY_TRANSMITTER,
+                            CATEGORY_OVERLAY,
+                            CERTIFICATE,
+                            CLAIMED_SCORE,
+                            CLUB,
+                            CREATED_BY,
+                            EMAIL,
+                            GRID_LOCATOR,
+                            LOCATION,
+                            NAME,
+                            ADDRESS,
+                            ADDRESS_CITY,
+                            ADDRESS_STATE_PROVINCE,
+                            ADDRESS_POSTALCODE,
+                            ADDRESS_COUNTRY,
+                            OPERATORS,
+                            OFFTIME,
+                            SOAPBOX)
+
+

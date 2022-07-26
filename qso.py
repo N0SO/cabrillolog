@@ -178,7 +178,7 @@ class dbQSO(QSO):
         instead of a list if strings.
         """
         if isinstance(qso, str):
-            print('string')
+            #print('string')
             #call parent
             super().parseQSO(qso)
             return True

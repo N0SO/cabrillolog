@@ -66,35 +66,48 @@ class logFile():
                     ADDRESS_COUNTRY,
                     OPERATORS,
                     OFFTIME,
-                    SOAPBOX,
-                    RAWLOG)
+                    SOAPBOX)
                     
         self.fileName = fileName            
         self.qsoList = []
+        self.rawlog = RAWLOG
         
         if (fileName):
-            print('Filling from file {}'.format(fileName))
+            print('Filling from file {} ...'.format(fileName))
             self.header, self.qsolist = self.getLogFromFile(fileName)
+        elif RAWLOG:
+            print ('Filling from provided RAWLOG parameter ...')
+            self.header, self.qsolist = self.parseRawLog(RAWLOG)
+            
         self.nextQID = self.getqsoListLen()
 
     def getqsoListLen(self):
         return len(self.qsoList)
         
     def getLogFromFile(self, fileName):
+        """
+        Read the raw log file, then call parseRawLog to parse.
+        """
         qsoutils = QSOUtils()
         rawlog = qsoutils.readFile(fileName, linesplit = False)
         if (rawlog == None):
             print('Error reading file {}'.format(fileName))
             return None, None
+        self.RAWLOG = rawlog
+        return self.parseRawLog(rawlog)
+        
+    def parseRawLog(self, rawlog):
+        qsoutils = QSOUtils()        
         if ( not(qsoutils.IsThisACabFile(rawlog))):
-            """Not a valid cab file!"""
+            """Not a valid cab data!"""
             return None, None
-        nheader = cabrilloHeader(RAWLOG=rawlog)
+        nheader = cabrilloHeader()
         nqsolist = []
+        headertext = self.extractHeader(rawlog)
         #cabrilloTags = vars(header)
-        loglines = rawlog.splitlines()
+        #loglines = rawlog.splitlines()
         ln=0
-        for line in loglines:
+        for line in headertext:
             ln+=1
             uline = line.strip().upper()
             #print ('uline ={} - LEN={}'.format(uline, len(uline)))
@@ -117,6 +130,77 @@ class logFile():
                                 format(line, ln))
             
         return nheader, nqsolist
+        
+    def __testRawlog(self, rawlog):
+        """
+        Test passed parameter rawlog to see if it:
+          1. Contains Data
+          2. Is a string or a list
+          
+        If rawlog and self.RAWLOG are both None type, 
+            return None to caller, 
+        Else 
+            if rawlog is a string 
+                convert to list of lines 
+        Return the list of lines
+        """
+        if (rawlog == None):
+            rawlog = self.RAWLOG
+        if rawlog == None:
+            return None
+        if isinstance(rawlog, str):
+            return rawlog.splitlines()
+        #else:
+            #rawlog is already a list
+        return rawlog
+        
+    def extractHeader(self, rawlog = None):
+        """
+        Extract and return a list containing just the header 
+        lines from the rawlog string or list of lines. 
+        
+        Skip leading blank lines.
+        """
+        loglines = self.__testRawlog(rawlog)
+        if loglines == None:
+            return None
+        rawlog = loglines
+        header = None
+        headerFound = False
+        ln = 0
+        for line in rawlog:
+            ln+=1
+            if headerFound:
+                if line.upper().startswith('QSO:'):
+                    break # End of header
+                else:
+                    header.append(line)
+            else:
+                if line.upper().startswith('START-OF-LOG:'):
+                    header = [line]
+                    headerFound = True
+        return header  
+
+    def extractQSOS(self, rawlog=None):
+        """
+        Extract and return a list of the QSO: lines from the
+        rawlog data provided, or None type if no QSOs
+        """
+        loglines = self.__testRawlog(rawlog)
+        if loglines == None:
+            return None
+        rawlog = loglines
+
+        qsolist = []
+        qsosFound = False
+        for line in loglines:
+            if line.upper().startswith('QSO:'):
+                qsosFound = True
+                qsolist.append(line)
+        if qsosFound:
+            return qsolist
+        else:
+            return None
 
 if __name__ == '__main__':
     wlog = logFile(fileName = 'W0MA.LOG')
