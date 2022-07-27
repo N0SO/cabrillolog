@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from cabrilloutils.qsoutils import QSOUtils
 
+
 class cabrilloHeader():
     def __init__(   self,
                     START_OF_LOG=None,
@@ -161,38 +162,15 @@ class cabrilloHeader():
                                 format(line, ln))
         return self
 
-    def prittyprint(self):
-        print('START-OF-LOG: {}'.format(self.START_OF_LOG))
-        print(' : {}'.format(self.END_OF_LOG))
-        print(' : {}'.format(self.CALLSIGN))
-        print(' : {}'.format(self.CONTEST))
-        print(' : {}'.format(self.CATEGORY_ASSISTED))
-        print(' : {}'.format(self.CATEGORY_BAND))
-        print(' : {}'.format(self.CATEGORY_MODE))
-        print(' : {}'.format(self.CATEGORY_OPERATOR))
-        print(' : {}'.format(self.CATEGORY_POWER))
-        print(' : {}'.format(self.CATEGORY_STATION))
-        print(' : {}'.format(self.CATEGORY_TIME))
-        print(' : {}'.format(self.CATEGORY_TRANSMITTER))
-        print(' : {}'.format(self.CATEGORY_OVERLAY))
-        print(' : {}'.format(self.CERTIFICATE))
-        print(' : {}'.format(self.CLAIMED_SCORE))
-        print(' : {}'.format(self.CLUB))
-        print(' : {}'.format(self.CREATED_BY))
-        print(' : {}'.format(self.EMAIL))
-        print(' : {}'.format(self.GRID_LOCATOR))
-        print(' : {}'.format(self.LOCATION))
-        print(' : {}'.format(self.NAME))
-        print(' : {}'.format(self.ADDRESS))
-        print(' : {}'.format(self.ADDRESS_CITY))
-        print(' : {}'.format(self.ADDRESS_STATE_PROVINCE))
-        print(' : {}'.format(self.ADDRESS_POSTALCODE))
-        print(' : {}'.format(self.ADDRESS_COUNTRY))
-        print(' : {}'.format(self.OPERATORS))
-        print(' : {}'.format(self.OFFTIME))
-        print(' : {}'.format(self.SOAPBOX))
-        
-
+    def prettyprint(self):
+        """
+        Returns heaader data as a list suitable for printing.
+        """
+        from headerdefs import HEADERDEFS
+        headerlines = []
+        for tag in HEADERDEFS:
+            headerlines.append('{}: {}'.format(tag, self.__dict__[tag]))
+        return headerlines
 
 class dbcabrilloHeader(cabrilloHeader):
 

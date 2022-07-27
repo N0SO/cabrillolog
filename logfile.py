@@ -187,4 +187,15 @@ class logFile():
         #print(qlist)
         self.__buildqsoList(qlist)
         return self.header, self.qsoList
-  
+    
+    def PrettyPrint(self, log=None):
+        """
+        Returns log data as a list suitable for printing.
+        """
+        if log==None:
+            log=self
+        logData = log.header.prettyprint()
+        for qso in log.qsoList:
+            logData.append(qso.makeTSV())
+        return logData
+        

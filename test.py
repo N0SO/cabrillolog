@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 """Unit test code"""
-import sys
-sys.path.insert(0, '/home/pi/Projects/moqputils')
+import sys, os.path
+pipath = '/home/pi/Projects/moqputils'
+winpath = 'C:\\Users\\M738513\\Documents\\Projects\\moqputils-master'
+if ( os.path.exists(pipath) and \
+          (os.path.isfile(pipath) == False) ):
+            sys.path.insert(0, pipath)
+elif ( os.path.exists(winpath) and \
+          (os.path.isfile(winpath) == False) ):
+            sys.path.insert(0, winpath)
+#sys.path.insert(0, '/home/pi/Projects/moqputils')
 #sys.path.insert(0, 'C:\\Users\\M738513\\Documents\\Projects\\moqputils-master')
 #print (sys.path)
 #from qso import *
@@ -39,15 +47,16 @@ if __name__ == '__main__':
     wlog = logFile(fileName = 'W0MA.LOG')
     #print(dir(wlog))
     if wlog:
-        wlog.header.showh()
+        #wlog.header.showh()
         #wlog.header.show()
-        wlog.header.prittyprint()
-        print('{} QSOs in this object.'.format(len(wlog.qsoList)))
-        for qso in wlog.qsoList:
-                qso.show()
-    
+        #wlog.header.prettyprint()
+        #print('{} QSOs in this object.'.format(len(wlog.qsoList)))
+        #for qso in wlog.qsoList:
+        #        qso.show()
+        
         #header = wlog.extractQSOS()
         #for l in header:
         #    print(l)
-
+        for line in wlog.PrettyPrint():
+            print(line)
    

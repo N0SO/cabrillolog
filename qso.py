@@ -204,4 +204,4 @@ class dbQSO(QSO):
         self.nolog = qso['NOLOG']
         self.noqsos = qso['NOQSOS']
         return True
-                    
+                                
