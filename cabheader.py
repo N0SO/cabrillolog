@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+from cabrilloutils.qsoutils import QSOUtils
 
 class cabrilloHeader():
     def __init__(   self,
@@ -30,7 +31,8 @@ class cabrilloHeader():
                     ADDRESS_COUNTRY=None,
                     OPERATORS=None,
                     OFFTIME=None,
-                    SOAPBOX=None):
+                    SOAPBOX=None,
+                    HEADERTEXT=None):
   
         self.START_OF_LOG=START_OF_LOG
         self.END_OF_LOG=END_OF_LOG
@@ -62,6 +64,8 @@ class cabrilloHeader():
         self.OFFTIME=OFFTIME
         self.SOAPBOX=SOAPBOX
 
+        if (HEADERTEXT):
+            self.parseHeaderList(HEADERTEXT)
     
     def __dofmt(self, fmt):
         return (fmt.format(\
@@ -137,6 +141,59 @@ class cabrilloHeader():
     def getHeader(self):
         return vars(self)
 
+    def parseHeader(self, headertext):
+        qsoutils = QSOUtils()        
+        cabrilloTags = vars(self).keys()
+        ln=0
+        for line in headertext:
+            ln+=1
+            uline = line.strip().upper()
+            cabparts = uline.split(':',1)
+            if(len(cabparts)<2):
+                print('Skipping line {}: {}'.format(ln, line))
+            else:
+                cabtag = cabparts[0].upper().strip()
+                cabdata = cabparts[1].upper().strip()
+                #print('{}, {}'.format(cabtag, cabdata))
+                gcabtag = self.setTagData(cabtag, cabdata)
+                if gcabtag == False:
+                    print('Header tag {} at line {} unknown.'.\
+                                format(line, ln))
+        return self
+
+    def prittyprint(self):
+        print('START-OF-LOG: {}'.format(self.START_OF_LOG))
+        print(' : {}'.format(self.END_OF_LOG))
+        print(' : {}'.format(self.CALLSIGN))
+        print(' : {}'.format(self.CONTEST))
+        print(' : {}'.format(self.CATEGORY_ASSISTED))
+        print(' : {}'.format(self.CATEGORY_BAND))
+        print(' : {}'.format(self.CATEGORY_MODE))
+        print(' : {}'.format(self.CATEGORY_OPERATOR))
+        print(' : {}'.format(self.CATEGORY_POWER))
+        print(' : {}'.format(self.CATEGORY_STATION))
+        print(' : {}'.format(self.CATEGORY_TIME))
+        print(' : {}'.format(self.CATEGORY_TRANSMITTER))
+        print(' : {}'.format(self.CATEGORY_OVERLAY))
+        print(' : {}'.format(self.CERTIFICATE))
+        print(' : {}'.format(self.CLAIMED_SCORE))
+        print(' : {}'.format(self.CLUB))
+        print(' : {}'.format(self.CREATED_BY))
+        print(' : {}'.format(self.EMAIL))
+        print(' : {}'.format(self.GRID_LOCATOR))
+        print(' : {}'.format(self.LOCATION))
+        print(' : {}'.format(self.NAME))
+        print(' : {}'.format(self.ADDRESS))
+        print(' : {}'.format(self.ADDRESS_CITY))
+        print(' : {}'.format(self.ADDRESS_STATE_PROVINCE))
+        print(' : {}'.format(self.ADDRESS_POSTALCODE))
+        print(' : {}'.format(self.ADDRESS_COUNTRY))
+        print(' : {}'.format(self.OPERATORS))
+        print(' : {}'.format(self.OFFTIME))
+        print(' : {}'.format(self.SOAPBOX))
+        
+
+
 class dbcabrilloHeader(cabrilloHeader):
 
     def __init__(   self,
@@ -171,12 +228,13 @@ class dbcabrilloHeader(cabrilloHeader):
                     SOAPBOX=None,
                     ID=None,
                     CABBONUS=False,
-                    TIMESTAMP=None):
+                    TIMESTAMP=None,
+                    HEADERDATA=None):
   
         self.ID=ID
-        self.CABBONUS=CABBONUS=False
-        self.TIMESTAMP=TIMESTAMP=None
-        super().__init__(    \
+        self.CABBONUS=CABBONUS
+        self.TIMESTAMP=TIMESTAMP
+        super().__init__(   \
                             START_OF_LOG,
                             END_OF_LOG,
                             CALLSIGN,
@@ -205,6 +263,47 @@ class dbcabrilloHeader(cabrilloHeader):
                             ADDRESS_COUNTRY,
                             OPERATORS,
                             OFFTIME,
-                            SOAPBOX)
+                            SOAPBOX,
+                            HEADERDATA)
 
-
+    def parseHeader(self, hd):
+        if isinstance(hd, str):
+            #print('string')
+            #call parent
+            super().parseHeader(hd)
+            return self
+        #else parse the dict() qso   
+        #print('dict()')
+        self.START_OF_LOG=hd['START_OF_LOG']
+        self.END_OF_LOG=hd['END_OF_LOG']
+        self.CALLSIGN=hd['CALLSIGN']
+        self.CONTEST=hd['CONTEST']
+        self.CATEGORY_ASSISTED=hd['CATEGORY_ASSISTED']
+        self.CATEGORY_BAND=hd['CATEGORY_BAND']
+        self.CATEGORY_MODE=hd['CATEGORY_MODE']
+        self.CATEGORY_OPERATOR=hd['CATEGORY_OPERATOR']
+        self.CATEGORY_POWER=hd['CATEGORY_POWER']
+        self.CATEGORY_STATION=hd['CATEGORY_STATION']
+        self.CATEGORY_TIME=hd['CATEGORY_TIME']
+        self.CATEGORY_TRANSMITTER=hd['CATEGORY_TRANSMITTER']
+        self.CATEGORY_OVERLAY=hd['CATEGORY_OVERLAY']
+        self.CERTIFICATE=hd['CERTIFICATE']
+        self.CLAIMED_SCORE=hd['CLAIMED_SCORE']
+        self.CLUB=hd['CLUB']
+        self.CREATED_BY=hd['CREATED_BY']
+        self.EMAIL=hd['EMAIL']
+        self.GRID_LOCATOR=hd['GRID_LOCATOR']
+        self.LOCATION=hd['LOCATION']
+        self.NAME=hd['NAME']
+        self.ADDRESS=hd['ADDRESS']
+        self.ADDRESS_CITY=hd['ADDRESS_CITY']
+        self.ADDRESS_STATE_PROVINCE=hd['ADDRESS_STATE_PROVINCE']
+        self.ADDRESS_POSTALCODE=hd['ADDRESS_POSTALCODE']
+        self.ADDRESS_COUNTRY=hd['ADDRESS_COUNTRY']
+        self.OPERATORS=hd['OPERATORS']
+        self.OFFTIME=hd['OFFTIME']
+        self.SOAPBOX=hd['SOAPBOX']
+        self.ID=hd['ID']
+        self.CABBONUS=hd['CABBONUS']
+        self.TIMESTAMP=hd['TIMESTAMP']
+        return self

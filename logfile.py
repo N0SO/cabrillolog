@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from cabrillolog.qso import QSO
 from cabrillolog.cabheader import cabrilloHeader
 from cabrilloutils.qsoutils import QSOUtils
@@ -74,10 +74,11 @@ class logFile():
         
         if (fileName):
             print('Filling from file {} ...'.format(fileName))
-            self.header, self.qsolist = self.getLogFromFile(fileName)
+            self.header, self.qsoList = self.getLogFromFile(fileName)
         elif RAWLOG:
             print ('Filling from provided RAWLOG parameter ...')
-            self.header, self.qsolist = self.parseRawLog(RAWLOG)
+            #self.header, self.qsolist = self.parseRawLog(RAWLOG)
+            self.header, self.qsoList = self.parse2(RAWLOG)
             
         self.nextQID = self.getqsoListLen()
 
@@ -95,42 +96,7 @@ class logFile():
             return None, None
         self.RAWLOG = rawlog
         return self.parseRawLog(rawlog)
-        
-    def parseRawLog(self, rawlog):
-        qsoutils = QSOUtils()        
-        if ( not(qsoutils.IsThisACabFile(rawlog))):
-            """Not a valid cab data!"""
-            return None, None
-        nheader = cabrilloHeader()
-        nqsolist = []
-        headertext = self.extractHeader(rawlog)
-        #cabrilloTags = vars(header)
-        #loglines = rawlog.splitlines()
-        ln=0
-        for line in headertext:
-            ln+=1
-            uline = line.strip().upper()
-            #print ('uline ={} - LEN={}'.format(uline, len(uline)))
-            cabparts = uline.split(':',1)
-            #print (len(cabparts))
-            if(len(cabparts)<2):
-                print('Skipping line {}: {}'.format(ln, line))
-            else:
-                cabtag = cabparts[0]
-                cabdata = cabparts[1]
-                #print('{}, {}'.format(cabtag, cabdata))
-                if (cabtag == 'QSO'):
-                    qso = QSO(qdata=cabdata)
-                    if (qso):
-                        nqsolist.append(qso)
-                else:
-                    gcabtag = nheader.setTagData(cabtag, cabdata)
-                    if gcabtag == False:
-                        print('Header tag {} at line {} unknown.'.\
-                                format(line, ln))
-            
-        return nheader, nqsolist
-        
+
     def __testRawlog(self, rawlog):
         """
         Test passed parameter rawlog to see if it:
@@ -201,13 +167,24 @@ class logFile():
             return qsolist
         else:
             return None
-
-if __name__ == '__main__':
-    wlog = logFile(fileName = 'W0MA.LOG')
-    
-    #wlog.header.showh()
-    wlog.header.show()
-    
-    for qso in wlog.qsolist:
-            qso.show()
+            
+    def __buildqsoList(self, qlist):
+        for q in qlist:
+            qso = QSO(qdata=q)
+            if qso:
+                self.qsoList.append(qso)
+        return len(self.qsoList)
+            
+    def parseRawLog(self, rawlog):
+        loglines = self.__testRawlog(rawlog)
+        if loglines == None:
+            return None, None
+        #rawlog = loglines
+        headerlist = self.extractHeader(loglines)
+        self.header.parseHeader(headerlist)
+        
+        qlist = self.extractQSOS(loglines)
+        #print(qlist)
+        self.__buildqsoList(qlist)
+        return self.header, self.qsoList
   
