@@ -87,6 +87,30 @@ class QSO():
         Return  QSO as a dict() object
         """
         return vars(self)
+        
+    def getDBQSO(self):
+        """
+        Return QSO as a dict() object with
+        key names matching DB field names.
+        QSOs input from a database will be a Dict() object
+        instead of a list if strings. Fetch the data from
+        the dict() object read from the DN and put it in
+        the corrosponding QSO object element.
+        NOTE: This code relys on the QSODES and DBQSODEFS
+        order and alignmenet matching. 
+        (See notes in headedefs.py).
+        """
+        from headerdefs import QSODEFS, DBQSODEFS
+        index = 0
+        qso = dict()
+        for dbtag in DBQSODEFS:
+            tag = QSODEFS[index]
+            if dbtag in vars(self).keys():
+                qso[dbtag] = self.__dict__[tag]
+            index += 1
+        return qso
+        
+    
 
     def __dofmt(self, fmt):
         return (fmt.format(self.freq,
@@ -175,33 +199,29 @@ class dbQSO(QSO):
     def parseQSO(self,  qso):
         """
         QSOs input from a database will be a Dict() object
-        instead of a list if strings.
+        instead of a list if strings. Fetch the data from
+        the dict() object read from the DN and put it in
+        the corrosponding QSO object element.
+        NOTE: This code relys on the QSODES and DBQSODEFS
+        order and alignmenet matching. 
+        (See notes in headedefs.py).
         """
         if isinstance(qso, str):
             #print('string')
             #call parent
             super().parseQSO(qso)
             return True
-        #else parse the dict() qso   
-        print('dict()')        
-        self.id = qso['ID']
-        self.logid = qso['LOGID']
-        self.freq = qso['FREQ']
-        self.mode = qso['MODE']
-        
-        self.qtime = qso['DATETIME']
-                        
-        self.mycall =qso['MYCALL']
-        self.myrst = qso['MYREPORT']
-        self.myqth = qso['MYQTH']
-               
-        self.urcall = qso['URCALL']
-        self.urrst = qso['URREPORT']
-        self.urqth = qso['URQTH']
-        self.valid =  qso['VALID']
-        self.dupe = qso['DUPE']
-        self.qsl = qso['QSL']
-        self.nolog = qso['NOLOG']
-        self.noqsos = qso['NOQSOS']
+        #else parse the dict() qso  
+        from headerdefs import QSODEFS, DBQSODEFS        
+        index = 0
+        for dbTag in DBQSODEFS:
+            Tag = QSODEFS[index]
+            if dbTag in qso.keys():
+                self.__dict__[Tag] = qso[dbTag]
+            else:
+                self.__dict__[Tag] = None          
+            index += 1
         return True
-                                
+        
+
+        

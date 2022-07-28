@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """
-DEFs for header variable tags
+DEFs for header variable tags The order of these needs to
+line up with the order of the tags in DBHEADERDEFS so the
+methods in cabrilloHeader can easily copy data to and from
+the dict() objetcs the MySQL code reads from the database.
+START_OF_LOG should line uo with START in DBHEADERDEFS,
+CALLSIGN should line up with CALLSIGN,
+etc
+etc
 """
 HEADERDEFS =    [\
                 'START_OF_LOG',
@@ -11,7 +18,7 @@ HEADERDEFS =    [\
                 'CATEGORY_BAND',
                 'CATEGORY_MODE',
                 'CATEGORY_OPERATOR',
-				'CATEGORY_POWER',
+                'CATEGORY_POWER',
                 'CATEGORY_STATION',
                 'CATEGORY_TRANSMITTER',
                 'CATEGORY_OVERLAY',
@@ -31,8 +38,17 @@ HEADERDEFS =    [\
                 'OFFTIME',
                 'GRID_LOCATOR',
                 'SOAPBOX',
-                'END_OF_LOG']
-                
+                'END_OF_LOG',
+                'IOTAISLANDNAME',
+                'ID',
+                'MOQPCAT',
+                'STATUS',
+                'CABBONUS',
+                'TIMESTAMP']
+"""
+See comments above about the order of the tags listed below.
+Changing it will break the database read/write methods!
+"""                
 DBHEADERDEFS =  [\
                 'START',	
                 'CALLSIGN',
@@ -69,7 +85,16 @@ DBHEADERDEFS =  [\
                 'STATUS',
                 'CABBONUS',
                 'TIMESTAMP']
-                
+"""
+DEFs for qso variable tags The order of these needs to
+line up with the order of the tags in DBQSODEFS so the
+methods in QSO can easily copy data to and from
+the dict() objetcs the MySQL code reads from the database.
+freq should line uo with FREQ in DBQSODEFS,
+mode should line up with MODE,
+etc.
+etc.
+"""                
 QSODEFS =   [\
             'freq',
             'mode',
@@ -82,7 +107,17 @@ QSODEFS =   [\
             'urqth',
             'valid',
             'dupe',
-            'qdata']
+            'qdata',
+            'id',
+            'logid',
+            'qsl',
+            'nolog',
+            'noqsos']
+]
+"""
+See comments above about the order of the tags listed below.
+Changing it will break the database read/write methods!
+"""                
             
 DBQSODEFS=  [\
             'FREQ',
