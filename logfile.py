@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from cabrillolog.qso import QSO
 from cabrillolog.cabheader import cabrilloHeader
-from cabrilloutils.qsoutils import QSOUtils
+import sys, os.path
 
 class logFile():
     def __init__(self,
@@ -34,8 +34,7 @@ class logFile():
                     ADDRESS_COUNTRY=None,
                     OPERATORS=None,
                     OFFTIME=None,
-                    SOAPBOX=None,
-                    RAWLOG=None):
+                    SOAPBOX=None):
                         
         self.header = cabrilloHeader(\
                     START_OF_LOG,
@@ -68,18 +67,31 @@ class logFile():
                     OFFTIME,
                     SOAPBOX)
                     
-        self.fileName = fileName            
+        self.fileName = None            
         self.qsoList = []
-        self.rawlog = RAWLOG
+        self.rawlog = None
         
         if (fileName):
-            print('Filling from file {} ...'.format(fileName))
-            self.header, self.qsoList = self.getLogFromFile(fileName)
-        elif RAWLOG:
-            print ('Filling from provided RAWLOG parameter ...')
-            #self.header, self.qsolist = self.parseRawLog(RAWLOG)
-            self.header, self.qsoList = self.parse2(RAWLOG)
-            
+            if (isinstance(fileName, str)):
+                if ( os.path.exists(fileName) and \
+                        (os.path.isfile(fileName) == True) ):
+                    print('Filling from file {} ...'.format(fileName))
+                    self.header, self.qsoList = \
+                        self.getLogFromFile(fileName)
+                    self.fileName =fileName
+                elif (len(fileName) < 10):
+                    print('Filling from DB call {} ...'.format(fileName))
+                    self.header, self.qsoList = \
+                                self.getLogfromDB(fileName)
+                    self.fileName = fileName
+                elif fileName.upper.startswith('START-OF-LOG:'):
+                    self.rawlog = fileName
+
+            elif ( (isinstance(fileName, list)) or self.rawlog ):
+                print ('Filling from provided RAWLOG parameter ...')
+                self.header, self.qsolist = \
+                                self.parseRawLog(fileName)
+                self.rawlog = fileName
         self.nextQID = self.getqsoListLen()
 
     def getqsoListLen(self):
@@ -89,6 +101,7 @@ class logFile():
         """
         Read the raw log file, then call parseRawLog to parse.
         """
+        from cabrilloutils.qsoutils import QSOUtils
         qsoutils = QSOUtils()
         rawlog = qsoutils.readFile(fileName, linesplit = False)
         if (rawlog == None):
@@ -198,4 +211,25 @@ class logFile():
         for qso in log.qsoList:
             logData.append(qso.makeTSV())
         return logData
+
+    def getLogfromDB(self, call):
+        from moqputils.moqpdbutils import MOQPDBUtils
+        from moqputils.configs.moqpdbconfig import HOSTNAME, USER, PW,\
+                                                    DBNAME
+        mydb = MOQPDBUtils(HOSTNAME, USER, PW, DBNAME)
+        mydb.setCursorDict()
+        headerdata = mydb.fetchLogHeader(call)
+        #print (headerdata[0])
+        self.header.parseHeader(headerdata[0])
+        #print (self.header.getHeader())
+        qsos = mydb.ptheseqsos = mydb.read_pquery(\
+            "SELECT * FROM `QSOS` WHERE ( `LOGID` = %s )",
+                [self.header.ID])
+        self.qsoList = []
+        for qso in qsos:
+            self.qsoList.append(QSO(qdata=qso))
+        return self.header, self.qsoList
+            
+
         
+       

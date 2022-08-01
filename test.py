@@ -44,7 +44,8 @@ if __name__ == '__main__':
                         })
 #    tt = dbQSO(freq=7074)
     print ('populated tt:\n{}'.format(vars(tt)))"""
-    wlog = logFile(fileName = 'W0MA.LOG')
+    #wlog = logFile('W0MA.LOG')
+    wlog = logFile('W0M')
     #print(dir(wlog))
     if wlog:
         #wlog.header.showh()
@@ -57,6 +58,21 @@ if __name__ == '__main__':
         #header = wlog.extractQSOS()
         #for l in header:
         #    print(l)
-        for line in wlog.PrettyPrint():
-            print(line)
-   
+        #for line in wlog.PrettyPrint():
+        #    print(line)
+
+
+        #for qso in wlog.qsoList:
+        #    print('Raw QSO:\n{}\n'.format(qso.getQSO()))
+        #    print('DB QSO:\n{}\n'.format(qso.getDBQSO()))
+
+        #print('Raw header:\n{}'.format(wlog.header.getHeader()))
+        
+        #testd = wlog.getLogfromDB('W0MA')
+        for qso in wlog.qsoList:
+            print(qso.getQSO())
+        print(wlog.header.getHeader())
+        
+        print('Filename = {}'.format(wlog.fileName))
+        print('rawlog = {}'.format(wlog.rawlog))
+        

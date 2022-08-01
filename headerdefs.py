@@ -39,10 +39,7 @@ HEADERDEFS =    [\
                 'GRID_LOCATOR',
                 'SOAPBOX',
                 'END_OF_LOG',
-                'IOTAISLANDNAME',
                 'ID',
-                'MOQPCAT',
-                'STATUS',
                 'CABBONUS',
                 'TIMESTAMP']
 """
@@ -79,10 +76,7 @@ DBHEADERDEFS =  [\
                 'GRID_LOCATOR', #Not used in db
                 'SOAPBOX',
                 'ENDOFLOG',
-                'IOTAISLANDNAME',
                 'ID',
-                'MOQPCAT',
-                'STATUS',
                 'CABBONUS',
                 'TIMESTAMP']
 """
@@ -107,13 +101,13 @@ QSODEFS =   [\
             'urqth',
             'valid',
             'dupe',
-            'qdata',
+            'note',
             'id',
             'logid',
             'qsl',
             'nolog',
             'noqsos']
-]
+
 """
 See comments above about the order of the tags listed below.
 Changing it will break the database read/write methods!
@@ -130,7 +124,6 @@ DBQSODEFS=  [\
             'URREPORT',
             'URQTH',
             'VALID',
-            'QSL',
             'DUPE',
             'NOTE',
             'ID',

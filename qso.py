@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 from cabrilloutils.qsoutils import QSOUtils
+from headerdefs import QSODEFS, DBQSODEFS        
 
+MAXELEMENTS=10 # Number of QSO elements in a log file line
+  
 
 class QSO():
     def __init__(   self,
@@ -15,8 +18,15 @@ class QSO():
                     urqth=None,
                     valid=False,
                     dupe=False,
+                    note=False,
+                    id=None,
+                    logid=None,
+                    qsl=None,
+                    nolog=False,
+                    noqsos=False,
                     qdata = None):
-
+                        
+        """ Set any passed in values """
         self.freq=freq
         self.mode=mode
         self.qtime=qtime
@@ -28,14 +38,21 @@ class QSO():
         self.urqth=urqth
         self.valid=valid
         self.dupe=dupe
-        self.qdata=qdata
+        self.note=note
+        self.id=id
+        self.logid=logid
+        self.qsl=qsl
+        self.nolog=nolog
+        self.noqsos=noqsos
 
         if (qdata):
             self.parseQSO(qdata)
         
-    def parseQSO(self, qdata):
+    def parseQSO(self, fdata):
         """
-        Populate qso data elements from qdata. Expected format:
+        Parse QSO data from a log file if fdata is tring.
+        Populate qso data elements from fdata. Expected format:
+            string 'QSO: ' (skipped if present)
             freq (in KHz)
             mode
             date (yyyy-mm-dd)
@@ -50,14 +67,27 @@ class QSO():
         This works for the Missouri QSO Party.
 
         Needs error checking added!
+
+        Skip this and pass fdata to parseQSOdb if
+        fdata is type dict().
         """
+        if isinstance(fdata, dict):
+            #print('dict()')
+            #call parseQSOdb
+            self.parseQSOdb(fdata)
+            return True
         qsoutils=QSOUtils()
-        MAXELEMENTS=10
         self.qerrors = []
-        if (qdata == None):
+        if (fdata == None):
             self.qerrors.append('No data for this QSO.')
             self.valid=False
             return None
+        
+        if fdata.upper().startswith('QSO:'):
+            """Remove 'QSO: ' string"""
+            qdata = fdata[4:].upper().strip()
+        else:
+            qdata = fdata.upper().strip() 
         qelements = qdata.split()
         if (len(qelements)!=MAXELEMENTS):
             self.qerrors.append(\
@@ -66,22 +96,43 @@ class QSO():
             if (len(qelements)<MAXELEMENTS):
                 self.valid=False
                 return false
-        self.freq = qelements[0]
-        self.mode = qelements[1]
-        
-        self.qtime = qsoutils.qsotimeOBJ(qelements[2], qelements[3])
-                        
-        self.mycall = qelements[4]
-        self.myrst = qelements[5]
-        self.myqth = qelements[6]
-               
-        self.urcall = qelements[7]
-        self.urrst = qelements[8]
-        self.urqth = qelements[9]
-
-        self.valid = True
+        index = 0
+        for tag in QSODEFS:
+            if (tag =='qtime'):
+                """Date / time in elemets 2 and 3"""
+                self.__dict__[tag] = qsoutils.qsotimeOBJ(\
+                              qelements[index].strip(), 
+                              qelements[index+1].strip())
+                index += 1
+            else:
+                self.__dict__[tag] = qelements[index].strip()
+            index += 1
+            if index >= MAXELEMENTS: break
         return True
                                     
+    def parseQSOdb(self,  qso):
+        """
+        QSOs input from a database will be a Dict() object
+        instead of a list if strings. Fetch the data from
+        the dict() object read from the DB and put it in
+        the corrosponding QSO object element.
+        NOTE: This code relys on the QSODES and DBQSODEFS
+        order and alignmenet matching. 
+        (See notes in headedefs.py).
+        """
+        index = 0
+        for dbTag in DBQSODEFS:
+            Tag = QSODEFS[index]
+            if dbTag in qso.keys():
+                self.__dict__[Tag] = qso[dbTag]
+            else:
+                self.__dict__[Tag] = None          
+            index += 1
+        return True
+
+
+
+
     def getQSO(self):
         """
         Return  QSO as a dict() object
@@ -105,8 +156,9 @@ class QSO():
         qso = dict()
         for dbtag in DBQSODEFS:
             tag = QSODEFS[index]
-            if dbtag in vars(self).keys():
+            if tag in vars(self).keys():
                 qso[dbtag] = self.__dict__[tag]
+                #print('{}: {}: {}'.format(dbtag, tag, self.__dict__[tag]))
             index += 1
         return qso
         
@@ -148,80 +200,3 @@ class QSO():
     def showh(self):
         print(self.makeHTML())
 
-class dbQSO(QSO):
-    """
-    QSO class with added storage for database fields:
-    id = record id.
-    logid = the database of the logheader for this QSO.
-    qsl = the ID of the QSO record this QSO CONFIRMS (QSL).
-    nolog True = no log from URCALL in database for this QSO.
-    noqsos True = no matching qso in URCALL log for this QSO.
-    """
-    def __init__(   self,
-                    freq=None,
-                    mode=None,
-                    qtime=None,
-                    mycall=None,
-                    myrst=None,
-                    myqth=None,
-                    urcall=None,
-                    urrst=None,
-                    urqth=None,
-                    valid=False,
-                    dupe=False,
-                    qdata = None,
-                    id = None,
-                    logid=None,
-                    qsl=None,
-                    nolog=False,
-                    noqsos = False):
-        
-        self.id=id
-        self.logid=logid
-        self.qsl=qsl
-        self.nolog=nolog
-        self.noqsos=noqsos
-        # Call parent init to complete
-        super().__init__(   \
-                            freq=freq,
-                            mode=mode,
-                            qtime=qtime,
-                            mycall=mycall,
-                            myrst=myrst,
-                            myqth=myqth,
-                            urcall=urcall,
-                            urrst=urrst,
-                            urqth=urqth,
-                            valid=valid,
-                            dupe=dupe,
-                            qdata=qdata)
-
-    def parseQSO(self,  qso):
-        """
-        QSOs input from a database will be a Dict() object
-        instead of a list if strings. Fetch the data from
-        the dict() object read from the DN and put it in
-        the corrosponding QSO object element.
-        NOTE: This code relys on the QSODES and DBQSODEFS
-        order and alignmenet matching. 
-        (See notes in headedefs.py).
-        """
-        if isinstance(qso, str):
-            #print('string')
-            #call parent
-            super().parseQSO(qso)
-            return True
-        #else parse the dict() qso  
-        from headerdefs import QSODEFS, DBQSODEFS        
-        index = 0
-        for dbTag in DBQSODEFS:
-            Tag = QSODEFS[index]
-            if dbTag in qso.keys():
-                self.__dict__[Tag] = qso[dbTag]
-            else:
-                self.__dict__[Tag] = None          
-            index += 1
-        return True
-        
-
-        
