@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from cabrillolog.qso import QSO
-from cabrillolog.cabheader import cabrilloHeader
+from qso import QSO
+from cabheader import cabrilloHeader
 import sys, os.path
 
 class logFile():
@@ -165,6 +165,7 @@ class logFile():
         Extract and return a list of the QSO: lines from the
         rawlog data provided, or None type if no QSOs
         """
+        from multicounty.multicounty import multiCounty
         loglines = self.__testRawlog(rawlog)
         if loglines == None:
             return None
@@ -175,7 +176,13 @@ class logFile():
         for line in loglines:
             if line.upper().startswith('QSO:'):
                 qsosFound = True
-                qsolist.append(line)
+                mc=multiCounty(line) # Expand county line QSOs
+                if (mc.isMulti()):
+                    for i in mc.qsoList:
+                        qsolist.append(i)
+                else:
+                    qsolist.append(mc.qsoText)
+
         if qsosFound:
             return qsolist
         else:
@@ -213,8 +220,8 @@ class logFile():
         return logData
 
     def getLogfromDB(self, call):
-        from moqputils.moqpdbutils import MOQPDBUtils
-        from moqputils.configs.moqpdbconfig import HOSTNAME, USER, PW,\
+        from moqputils.moqputils.moqpdbutils import MOQPDBUtils
+        from moqputils.moqputils.configs.moqpdbconfig import HOSTNAME, USER, PW,\
                                                     DBNAME
         mydb = MOQPDBUtils(HOSTNAME, USER, PW, DBNAME)
         mydb.setCursorDict()

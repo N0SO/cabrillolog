@@ -180,7 +180,7 @@ class QSO():
                        
     def makeTSV(self):
         """
-        Return this QSO as a Tsb Separated Line (TSV).
+        Return this QSO as a Tab Separated Line (TSV).
         """
         fmt = '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
         return self.__dofmt(fmt)

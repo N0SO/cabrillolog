@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """Unit test code"""
 import sys, os.path
-pipath = '/home/pi/Projects/moqputils'
+pipath = '/home/pi/Projects'
 winpath = 'C:\\Users\\M738513\\Documents\\Projects\\moqputils-master'
 if ( os.path.exists(pipath) and \
           (os.path.isfile(pipath) == False) ):
             sys.path.insert(0, pipath)
+            os.chdir(pipath)
+
 elif ( os.path.exists(winpath) and \
           (os.path.isfile(winpath) == False) ):
             sys.path.insert(0, winpath)
-#sys.path.insert(0, '/home/pi/Projects/moqputils')
+            os.chdir(winpath)
 #sys.path.insert(0, 'C:\\Users\\M738513\\Documents\\Projects\\moqputils-master')
-#print (sys.path)
+print (sys.path)
 #from qso import *
 from logfile import *
 if __name__ == '__main__':
@@ -43,9 +45,9 @@ if __name__ == '__main__':
                         'DUPE': 0
                         })
 #    tt = dbQSO(freq=7074)
-    print ('populated tt:\n{}'.format(vars(tt)))"""
-    #wlog = logFile('W0MA.LOG')
-    wlog = logFile('W0M')
+    print ('populated t#t:\n{}'.format(vars(tt)))"""
+    wlog = logFile('AA0AJ.LOG')
+    #wlog = logFile('W0M')
     #print(dir(wlog))
     if wlog:
         #wlog.header.showh()
@@ -75,4 +77,8 @@ if __name__ == '__main__':
         
         print('Filename = {}'.format(wlog.fileName))
         print('rawlog = {}'.format(wlog.rawlog))
-        
+        headert=wlog.header.prettyprint()
+        for l in headert:
+          print(l)
+        for qso in wlog.qsoList:
+            qso.show()
