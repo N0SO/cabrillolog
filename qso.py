@@ -151,7 +151,7 @@ class QSO():
         order and alignmenet matching. 
         (See notes in headedefs.py).
         """
-        from headerdefs import QSODEFS, DBQSODEFS
+        #from headerdefs import QSODEFS, DBQSODEFS
         index = 0
         qso = dict()
         for dbtag in DBQSODEFS:
@@ -182,20 +182,36 @@ class QSO():
         """
         Return this QSO as a Tab Separated Line (TSV).
         """
-        fmt = '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
+        fmt = 'QSO:\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
         return self.__dofmt(fmt)
                             
     def makeHTML(self):
         """
         Return this QSO as an HTML Table Row (HTR).
         """
-        fmt='<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
+        fmt='<tr><td>QSO:</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
             '<td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
             '<td>{}</td><td>{}</td><td>{}</td>'
         return self.__dofmt(fmt)
 
     def show(self):
         print(self.makeTSV())
+        
+    def showid(self):
+        fmt = 'QSO {}:\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
+        print (fmt.format( self.id,
+                            self.freq,
+                            self.mode,
+                            self.qtime,
+                            self.mycall,
+                            self.myrst,
+                            self.myqth,
+                            self.urcall,
+                            self.urrst,
+                            self.urqth,
+                            self.valid,
+                            self.dupe))
+            
         
     def showh(self):
         print(self.makeHTML())

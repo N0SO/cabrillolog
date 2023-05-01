@@ -187,12 +187,25 @@ class logFile():
             return qsolist
         else:
             return None
+
+    def __sortqs(self, e):
+        return e.qtime
             
     def __buildqsoList(self, qlist):
+        qs = []
         for q in qlist:
             qso = QSO(qdata=q)
             if qso:
-                self.qsoList.append(qso)
+                qs.append(qso)
+        qid=0
+        qcount = len(qs)
+        #Sort qsos by date/time
+        qs.sort(key=self.__sortqs)
+        #Assign qso ID
+        for i in range(qcount):
+                qs[i].id = qid
+                self.qsoList.append(qs[i])
+                qid += 1
         return len(self.qsoList)
             
     def parseRawLog(self, rawlog):
