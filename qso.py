@@ -89,13 +89,16 @@ class QSO():
         else:
             qdata = fdata.upper().strip() 
         qelements = qdata.split()
-        if (len(qelements)!=MAXELEMENTS):
+        qelen = len(qelements)
+        loopMax = MAXELEMENTS
+        if (qelen != MAXELEMENTS):
             self.qerrors.append(\
-              '{} QSO parameters detected, there should be only {}.'\
-              .format(len(qelements), MAXELEMENTS))
-            if (len(qelements)<MAXELEMENTS):
+              '{} QSO parameters detected, there should be {}.'\
+              .format(qelen, MAXELEMENTS))
+            if (qelen < MAXELEMENTS):
                 self.valid=False
-                return false
+                #return False
+                loopMax = qelen
         index = 0
         for tag in QSODEFS:
             if (tag =='qtime'):
@@ -107,9 +110,12 @@ class QSO():
             else:
                 self.__dict__[tag] = qelements[index].strip()
             index += 1
-            if index >= MAXELEMENTS: break
-        return True
-                                    
+            if index >= loopMax: break
+        if index > MAXELEMENTS:
+            return True
+        else:
+            return False
+
     def parseQSOdb(self,  qso):
         """
         QSOs input from a database will be a Dict() object
@@ -185,21 +191,12 @@ class QSO():
         fmt = 'QSO:\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
         return self.__dofmt(fmt)
                             
-    def makeHTML(self):
-        """
-        Return this QSO as an HTML Table Row (HTR).
-        """
-        fmt='<tr><td>QSO:</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
-            '<td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
-            '<td>{}</td><td>{}</td><td>{}</td>'
-        return self.__dofmt(fmt)
-
     def show(self):
         print(self.makeTSV())
         
-    def showid(self):
-        fmt = 'QSO {}:\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
-        print (fmt.format( self.id,
+
+    def __doidfmt(self, fmt):
+        return (fmt.format( self.id,
                             self.freq,
                             self.mode,
                             self.qtime,
@@ -211,8 +208,26 @@ class QSO():
                             self.urqth,
                             self.valid,
                             self.dupe))
-            
+
+    def MakeidTSV(self):
+        """
+        Show QSO with qso ID, validity and DUPE fields
+        """
+        fmt = 'QSO:\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
+        return self.__doidfmt(fmt)   
         
+    def showid(self):
+        print(self.MakeidTSV())
+        
+    def makeHTML(self):
+        """
+        Return this QSO as an HTML Table Row (HTR).
+        """
+        fmt='<tr><td>QSO:</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
+            '<td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
+            '<td>{}</td><td>{}</td><td>{}</td>'
+        return self.__dofmt(fmt)
+
     def showh(self):
         print(self.makeHTML())
 

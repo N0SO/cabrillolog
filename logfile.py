@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from qso import QSO
 from cabheader import cabrilloHeader
-import sys, os.path
+import sys, os.path, datetime
 
 class logFile():
     def __init__(self,
@@ -193,15 +193,20 @@ class logFile():
             
     def __buildqsoList(self, qlist):
         qs = []
+        timesValid = True
         for q in qlist:
             qso = QSO(qdata=q)
             if qso:
+                if isinstance(qso.qtime, datetime.datetime) == False:
+                    timesValid = False                   
                 qs.append(qso)
+                #qso.showid()
         qid=0
         qcount = len(qs)
-        #Sort qsos by date/time
-        qs.sort(key=self.__sortqs)
-        #Assign qso ID
+        if (timesValid):
+            #Sort qsos by date/time
+            qs.sort(key=self.__sortqs)
+            #Assign qso ID
         for i in range(qcount):
                 qs[i].id = qid
                 self.qsoList.append(qs[i])

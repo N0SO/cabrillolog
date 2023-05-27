@@ -138,6 +138,7 @@ class cabrilloHeader():
         #print(taglist)
         mtag = tag.replace('-','_')
         if (mtag in taglist):
+            if mtag == 'END_OF_LOG': tdata = True
             #print('Setting {} = {}'.format(mtag, tdata))
             self.__dict__[mtag] = tdata
             result = True
