@@ -44,6 +44,7 @@ class QSO():
         self.qsl=qsl
         self.nolog=nolog
         self.noqsos=noqsos
+        self.dbdata = False
 
         if (qdata):
             self.parseQSO(qdata)
@@ -127,6 +128,7 @@ class QSO():
         (See notes in headedefs.py).
         """
         index = 0
+        self.dbdata = True
         for dbTag in DBQSODEFS:
             Tag = QSODEFS[index]
             if dbTag in qso.keys():
@@ -135,9 +137,6 @@ class QSO():
                 self.__dict__[Tag] = None          
             index += 1
         return True
-
-
-
 
     def getQSO(self):
         """
@@ -171,24 +170,48 @@ class QSO():
     
 
     def __dofmt(self, fmt):
-        return (fmt.format(self.freq,
-                            self.mode,
-                            self.qtime,
-                            self.mycall,
-                            self.myrst,
-                            self.myqth,
-                            self.urcall,
-                            self.urrst,
-                            self.urqth,
-                            self.valid,
-                            self.dupe))
-    
-                       
+        if (self.dbdata):
+            retval = (fmt.format(\
+                             self.freq,
+                             self.mode,
+                             self.qtime,
+                             self.mycall,
+                             self.myrst,
+                             self.myqth,
+                             self.urcall,
+                             self.urrst,
+                             self.urqth,
+                             self.id,
+                             self.valid,
+                             self.qsl,
+                             self.dupe,
+                             self.nolog,
+                             self.noqsos,
+                             self.logid))
+
+        else:
+            retval = (fmt.format(\
+                             self.freq,
+                             self.mode,
+                             self.qtime,
+                             self.mycall,
+                             self.myrst,
+                             self.myqth,
+                             self.urcall,
+                             self.urrst,
+                             self.urqth,
+                             self.valid,
+                             self.dupe))
+        return retval
+
     def makeTSV(self):
         """
         Return this QSO as a Tab Separated Line (TSV).
         """
-        fmt = 'QSO:\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
+        if (self.dbdata):
+            fmt = 'QSO:\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
+        else:
+            fmt = 'QSO:\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'
         return self.__dofmt(fmt)
                             
     def show(self):
@@ -223,9 +246,15 @@ class QSO():
         """
         Return this QSO as an HTML Table Row (HTR).
         """
-        fmt='<tr><td>QSO:</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
+        if (self.dbdata):
+            fmt='<tr><td>QSO:</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
+            '<td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
+            '<td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'
+            
+        else:
+            fmt='<tr><td>QSO:</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
             '<td>{}</td><td>{}</td><td>{}</td><td>{}</td>' +\
-            '<td>{}</td><td>{}</td><td>{}</td>'
+            '<td>{}</td><td>{}</td><td>{}</td></tr>'
         return self.__dofmt(fmt)
 
     def showh(self):

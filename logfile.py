@@ -238,8 +238,8 @@ class logFile():
         return logData
 
     def getLogfromDB(self, call):
-        from moqputils.moqputils.moqpdbutils import MOQPDBUtils
-        from moqputils.moqputils.configs.moqpdbconfig import HOSTNAME, USER, PW,\
+        from moqputils.moqpdbutils import MOQPDBUtils
+        from moqputils.configs.moqpdbconfig import HOSTNAME, USER, PW,\
                                                     DBNAME
         mydb = MOQPDBUtils(HOSTNAME, USER, PW, DBNAME)
         mydb.setCursorDict()

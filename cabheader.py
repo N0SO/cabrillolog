@@ -183,19 +183,28 @@ class cabrilloHeader():
             index += 1
         return self
 
-
-
-
-    def prettyprint(self):
+    def prettyprint(self, rtype='csv'):
         """
         Returns header data as a list suitable for printing.
         """
         from headerdefs import HEADERDEFS
-        headerlines = []
+        if (rtype == 'html'):
+            headerlines = ['<table>']
+            rowfmt = '<tr><td>{}</td><td>{}</td></tr>'
+        else:    
+            headerlines = []
+            rowfmt ='{}: {}'
 
         for tag in HEADERDEFS:
+            if ('_' in tag):
+                tagstg = tag.replace('_', '-')
+            else:
+                tagstg = tag
             if tag in vars(self).keys():
-                headerlines.append('{}: {}'\
-                           .format(tag, self.__dict__[tag]))
+                headerlines.append(rowfmt\
+                           .format(tagstg, self.__dict__[tag]))
+        from headerdefs import HEADERDEFS
+        if (rtype == 'html'):
+            headerlines.append('</table>')
         return headerlines
 
